@@ -2,28 +2,47 @@
 
 namespace App\Casts;
 
+use App\Money;
+use Brick\Math\Exception\MathException;
+use Brick\Math\Exception\NumberFormatException;
+use Brick\Math\Exception\RoundingNecessaryException;
+use Brick\Money\Exception\UnknownCurrencyException;
+use Exception;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
 
 class MoneyCast implements CastsAttributes
 {
     /**
-     * Cast the given value.
+     * Get the amount in dollars for a given value.
      *
-     * @param  array<string, mixed>  $attributes
+     * @param Model $model The model instance to work with.
+     * @param string $key The key to retrieve the value from.
+     * @param mixed $value The value to convert to dollars.
+     * @param array $attributes Additional attributes to consider.
+     * @return float The amount in dollars.
+     * @throws Exception|MathException If there is an error during the conversion.
      */
     public function get(Model $model, string $key, mixed $value, array $attributes): float
     {
-        return round(floatval($value) / 100, precision: 2);
+        try {
+            $money = new Money($value);
+            return $money->amountAsDollars();
+        } catch (NumberFormatException|RoundingNecessaryException|UnknownCurrencyException $e) {
+            throw new Exception($e->getMessage());
+        }
     }
 
     /**
-     * Prepare the given value for storage.
+     * Get the dollar amount from the given value.
      *
-     * @param  array<string, mixed>  $attributes
+     * @throws MathException
+     * @throws NumberFormatException
+     * @throws RoundingNecessaryException
+     * @throws UnknownCurrencyException
      */
     public function set(Model $model, string $key, mixed $value, array $attributes): float
     {
-        return round(floatval($value) * 100, precision: 0);
+        return (new Money($value))->amountAsCents();
     }
 }
