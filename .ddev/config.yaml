@@ -16,10 +16,10 @@ web_environment: []
 nodejs_version: "18"
 disable_upload_dirs_warning: true
 web_extra_exposed_ports:
-  - name: octane
-    container_port: 8000
-    https_port: 443
-    http_port: 80
+#  - name: octane
+#    container_port: 8000
+#    https_port: 443
+#    http_port: 80
   - name: node-vite
     container_port: 3000
     http_port: 3001
