@@ -7,6 +7,8 @@ use App\Filament\Resources\PatientResource\RelationManagers;
 use App\Models\Patient;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -84,6 +86,8 @@ class PatientResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -98,6 +102,14 @@ class PatientResource extends Resource
             RelationManagers\TreatmentsRelationManager::class,
         ];
     }
+    public static function infolist(Infolist $infolist) : Infolist{
+       return $infolist->schema([
+           TextEntry::make('name'),
+           TextEntry::make('type'),
+           TextEntry::make('owner.name'),
+           TextEntry::make('date_of_birth'),
+       ]);
+    }
 
     public static function getPages(): array
     {
@@ -105,6 +117,7 @@ class PatientResource extends Resource
             'index' => Pages\ListPatients::route('/'),
             'create' => Pages\CreatePatient::route('/create'),
             'edit' => Pages\EditPatient::route('/{record}/edit'),
+            'view' => Pages\ViewPatient::route('/{record}'),
         ];
     }
 }
